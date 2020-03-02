@@ -81,6 +81,8 @@ def pull_requests_closed_no_merge(self, repo_group_id, repo_id=None, period='day
             COUNT(pull_request_id)
             FROM pull_requests WHERE repo_id = :repo_id and pull_requests.pr_closed_at is NOT NULL and
             pull_requests.pr_merged_at is NULL
+            GROUP BY pull_request_id, date
+
         """)
         results = pd.read_sql(closedNoMerge, self.database, params={'repo_id': repo_id, 'period': period,
                                                                      'begin_date': begin_date,
@@ -92,6 +94,7 @@ def pull_requests_closed_no_merge(self, repo_group_id, repo_id=None, period='day
             COUNT(pull_request_id)
             FROM pull_requests WHERE repo_id in (SELECT repo_id FROM repo WHERE repo_group_id = :repo_group_id)
             and pull_requests.pr_closed_at is NOT NULL and pull_requests.pr_merged_at is NULL
+            GROUP BY pull_request_id, date
         """)
 
         results = pd.read_sql(closedNoMerge, self.database,
